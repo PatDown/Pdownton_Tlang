@@ -5,36 +5,40 @@ import PIL.ImageDraw
 
 def frame_all_images(color=(0,0,0), wide=10):
     directory = os.getcwd() # Use working directory if unspecified  
+    
     new_directory = os.path.join(directory, 'modified')
     try:
         os.mkdir(new_directory)
     except OSError:
         pass # if the directory already exists, proceed  
+        
     image_list = [] # Initialize aggregaotrs
     file_list = []
     
-    directory_list = os.listdir(directory) # Get list of files
+    directory_list = os.listdir(os.path.join(directory, '1.4.5 Images')) # Get list of files
     for entry in directory_list:
-        absolute_filename = os.path.join(directory, entry)
+        absolute_filename = os.path.join(os.path.join(directory, '1.4.5 Images'), entry)
         try:
             image = PIL.Image.open(absolute_filename)
             file_list += [entry]
             image_list += [image]
         except IOError:
             pass # do nothing with errors tying to open non-images
-    return image_list, file_list
-    #load all the images
-    image_list, file_list = get_images(directory)  
-    for entry in directory_list:
-        absolute_filename = os.path.join(directory, entry)
-    width, height = absolute_filename.size
-    rounded_mask = PIL.Image.new('RGBA', (width, height), color)
-    drawing_layer = PIL.ImageDraw.Draw(rounded_mask)
-    drawing_layer.polygon([(wide,0),(width-wide,0),
-                            (width-wide,height),(wide,height)],
-                            fill=color)
-    result = PIL.Image.new('RGBA', absolute_filename.size, color)
-    return result
+            
+    image_list, file_list = get_images(os.path.join(directory, '1.4.5 Images'))  
+    
+    for n in range(len(image_list)):
+        filename, filetype = file_list[n].split('.')
+        absolute_filename = os.path.join(os.path.join(directory, '1.4.5 Images'), entry)
+        width, height = absolute_filename.size
+        rounded_mask = PIL.Image.new('RGBA', (width, height), color)
+        drawing_layer = PIL.ImageDraw.Draw(rounded_mask)
+        drawing_layer.polygon([(wide,0),(width-wide,0),
+                                (width-wide,height),(wide,height)],
+                                fill=color)
+        new_image = image_list[n]
+        new_image_filename = os.path.join(new_directory, filename + '.png')
+        new_image.save(new_image_filename)    
 def round_corners(original_image, percent_of_side):
     """ Rounds the corner of a PIL.Image
     
