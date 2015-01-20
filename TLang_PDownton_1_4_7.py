@@ -1,6 +1,7 @@
 import PIL
 import os.path  
 import PIL.ImageDraw  
+import matplotlib.pyplot as plt
 
 def frame_all_images(color=(0,0,0), wide=10):
     new_directory = os.path.join(os.getcwd(),'modified')
