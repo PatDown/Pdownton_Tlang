@@ -4,9 +4,8 @@ import os.path
 import PIL.ImageDraw            
 
 def frame_all_images(color=(0,0,0), wide=10):
-    directory = os.getcwd() # Use working directory if unspecified  
-    new_directory = os.path.join(directory, 'modified')
-    pictures = os.path.join(directory, 'modified')
+    new_directory = os.path.join(os.getcwd(),'modified')
+    pictures = os.path.join(os.getcwd(),'1.4.5 Images')
     try:
         os.mkdir(new_directory)
     except OSError:
@@ -15,27 +14,38 @@ def frame_all_images(color=(0,0,0), wide=10):
     image_list = [] # Initialize aggregaotrs
     file_list = []
     
-    directory_list = os.listdir(os.path.join(directory, pictures)) # Get list of files
+    directory_list = os.listdir(pictures) # Get list of files
     for entry in directory_list:
-        absolute_filename = os.path.join(os.path.join(directory, pictures), entry)
+        absolute_filename = os.path.join(pictures, entry)
         try:
             image = PIL.Image.open(absolute_filename)
             file_list += [entry]
             image_list += [image]
         except IOError:
             pass # do nothing with errors tying to open non-images
-    
-    for image in range(len(image_list)):
-        absolute_filename = os.path.join(os.path.join(directory, pictures), image)
-        width, height = absolute_filename.size
-        rounded_mask = PIL.Image.new('RGBA', (width, height), color)
+    for entry in file_list:
+        absolute_filename = os.path.join(os.path.join(os.getcwd(),'1.4.5 Images'),str(entry))
+        image = PIL.Image.open(absolute_filename)
+        width, height = image.size
+        rounded_mask = PIL.Image.new('RGBA', (width+wide*2, height+wide*2), (0,0,0,0))
         drawing_layer = PIL.ImageDraw.Draw(rounded_mask)
-        drawing_layer.polygon([(wide,0),(width-wide,0),
-                                (width-wide,height),(wide,height)],
+        drawing_layer.polygon([(0,0),(wide,0),
+                                (wide,height+wide),(0,height+wide)],
                                 fill=color)
-        new_image = image_list[image]
-        new_image_filename = os.path.join(new_directory, image + '.png')
-        new_image.save(new_image_filename)    
+        drawing_layer.polygon([(0,0),(0,wide),
+                                (height+wide,wide),(height+wide,0)],
+                                fill=color)
+        drawing_layer.polygon([(width+wide*2,0),(width+wide*2,height+wide*2),
+                                (width+wide,height+wide*2),(width+wide,0)],
+                                fill=color)
+        drawing_layer.polygon([(0,height+wide*2),(width+wide*2,height+wide*2),
+                                (width+wide*2,height+wide),(0,height+wide)],
+                                fill=color)
+        result = PIL.Image.new('RGBA', (width+wide*2,height+wide*2), (0,0,0,0))
+        result.paste(image, (wide,wide))
+        result.paste(rounded_mask, (0,0), mask=rounded_mask)
+        new_image_filename = os.path.join(new_directory,str(str(entry))+'.png')
+        result.save(new_image_filename)    
 def round_corners(original_image, percent_of_side):
     """ Rounds the corner of a PIL.Image
     
