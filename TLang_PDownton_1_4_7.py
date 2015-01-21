@@ -30,10 +30,10 @@ def frame_all_images(color=(0,0,0), wide=10):
         rounded_mask = PIL.Image.new('RGBA', (width+wide*2, height+wide*2), (0,0,0,0))
         drawing_layer = PIL.ImageDraw.Draw(rounded_mask)
         drawing_layer.polygon([(0,0),(wide,0),
-                                (wide,height+wide),(0,height+wide)],
+                                (wide,height+wide*2),(0,height+wide*2)],
                                 fill=color)
         drawing_layer.polygon([(0,0),(0,wide),
-                                (height+wide,wide),(height+wide,0)],
+                                (width+wide,wide),(width+wide,0)],
                                 fill=color)
         drawing_layer.polygon([(width+wide*2,0),(width+wide*2,height+wide*2),
                                 (width+wide,height+wide*2),(width+wide,0)],
@@ -41,10 +41,18 @@ def frame_all_images(color=(0,0,0), wide=10):
         drawing_layer.polygon([(0,height+wide*2),(width+wide*2,height+wide*2),
                                 (width+wide*2,height+wide),(0,height+wide)],
                                 fill=color)
+        fig, axes = plt.subplots(1, 2)
+        axes[0].set_xlim(0, width)
+        axes[0].set_ylim(0, height)
+        axes[1].set_xlim(0, width+wide*2)
+        axes[1].set_ylim(0, height+wide*2)
+        axes[0].imshow(image, interpolation='none')
         result = PIL.Image.new('RGBA', (width+wide*2,height+wide*2), (0,0,0,0))
         result.paste(image, (wide,wide))
         result.paste(rounded_mask, (0,0), mask=rounded_mask)
+        axes[1].imshow(result, interpolation='none')
+        fig.show()
         new_image_filename = os.path.join(new_directory,str(str(entry))+'.png')
-        result.save(new_image_filename) 
+        result.save(new_image_filename)
 
 
