@@ -17,13 +17,13 @@ try:
 except OSError:
     pass # if the directory already exists, proceed  
 # Build an absolute filename from directory + filename
-filename = os.path.join(directory, 'pngimg_com.jpg')
+filename2 = os.path.join(directory, str(pngimg_com.jpg))
 # Read the image data into an array
-img = plt.imread(filename)
-image = PIL.Image.open(filename)
-filename2, filetype = image.split('.')
+img = plt.imread(filename2)
+image = PIL.Image.open(filename2)
+filename, filetype = filename2.split('.')
 if filetype != 'png':
-    new_image_filename = os.path.join(new_directory, filename2 + '.png')
+    new_image_filename = os.path.join(new_directory, filename + '.png')
     image.save(new_image_filename)
     img = plt.imread(os.path.join(directory, filename2 + '.png'))
 height = len(img)
